@@ -12,17 +12,20 @@ require 'rake'
 require 'jeweler'
 Jeweler::Tasks.new do |gem|
   # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
-  gem.name = "antisamy-ruby"
+  gem.name = "antisamy"
   gem.homepage = "http://github.com/washu/antisamy-ruby"
   gem.license = "MIT"
-  gem.summary = %Q{Anti-Samy implmentation for Ruby. This package is a port of the existing anti-samy project found on the OWASP site.}
-  gem.description = %Q{TODO: longer description of your gem}
+  gem.summary = %Q{AntiSamy implmentation for Ruby.}
+  gem.description = %Q{
+    AntiSamy is a library to clean user-supplied HTML/CSS. This gem is a port of the anti-samy framework created for OWASP (http://www.owasp.org/index.php/Category:OWASP_AntiSamy_Project)
+    AntiSamy works by using a policy to removed any dangerous input you specify from attributes to tags. This gem is built using nokogiri
+  }
   gem.email = "sal.scotto@gmail.com"
   gem.authors = ["Sal Scotto"]
   # Include your dependencies below. Runtime dependencies are required when using your gem,
   # and development dependencies are only needed for development (ie running rake tasks, tests, etc)
-  #  gem.add_runtime_dependency 'jabber4r', '> 0.1'
-  #  gem.add_development_dependency 'rspec', '> 1.2.3'
+  gem.add_runtime_dependent 'nokogiri'
+  gem.add_development_dependency 'nokogiri'
 end
 Jeweler::RubygemsDotOrgTasks.new
 
