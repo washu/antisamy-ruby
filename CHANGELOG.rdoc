@@ -1,0 +1,4 @@
+== 0.0.1
+
+* Initial commit.
+* CSS scanning is currently not implmented so any CSS will be passed alonger verbatim

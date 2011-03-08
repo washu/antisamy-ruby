@@ -20,13 +20,6 @@ Gem::Specification.new do |s|
     "README.rdoc"
   ]
   s.files = [
-    ".document",
-    ".rspec",
-    "Gemfile",
-    "LICENSE.txt",
-    "README.rdoc",
-    "Rakefile",
-    "VERSION",
     "lib/antisamy.rb",
     "lib/antisamy/html/handler.rb",
     "lib/antisamy/html/sax_filter.rb",
@@ -35,16 +28,7 @@ Gem::Specification.new do |s|
     "lib/antisamy/model/css_property.rb",
     "lib/antisamy/model/tag.rb",
     "lib/antisamy/policy.rb",
-    "lib/antisamy/scan_results.rb",
-    "policy-examples/antisamy-anythinggoes.xml",
-    "policy-examples/antisamy-ebay.xml",
-    "policy-examples/antisamy-esapi.xml",
-    "policy-examples/antisamy-myspace.xml",
-    "policy-examples/antisamy-slashdot.xml",
-    "policy-examples/antisamy-tinymce-1.4.3.xml",
-    "policy-examples/antisamy.xml",
-    "spec/antisamy_spec.rb",
-    "spec/spec_helper.rb"
+    "lib/antisamy/scan_results.rb"
   ]
   s.homepage = %q{http://github.com/washu/antisamy-ruby}
   s.licenses = ["MIT"]
