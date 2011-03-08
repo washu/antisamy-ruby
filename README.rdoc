@@ -6,7 +6,7 @@ user-supplier HTML and CSS. Please check out the AntiSamy project over at OWASP[
 == Synopsis
 
 	require 'antisamy'
-	policy = AntiSamy::Policy.new('antisamy.xml')
+	policy = AntiSamy.policy('antisamy.xml')
 	tainted_html = 'User supplied markup'
 	scan_results = AntiSamy.scan(tainted_html,policy)
 	clean_html = scan_results.clean_html

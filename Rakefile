@@ -24,7 +24,7 @@ Jeweler::Tasks.new do |gem|
   gem.authors = ["Sal Scotto"]
   # Include your dependencies below. Runtime dependencies are required when using your gem,
   # and development dependencies are only needed for development (ie running rake tasks, tests, etc)
-  gem.add_runtime_dependent 'nokogiri'
+  gem.add_runtime_dependency 'nokogiri'
   gem.add_development_dependency 'nokogiri'
 end
 Jeweler::RubygemsDotOrgTasks.new
