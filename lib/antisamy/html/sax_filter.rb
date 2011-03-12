@@ -39,12 +39,12 @@ module AntiSamy
       @stack = Stack.new
       @css_content = nil
       @css_attributes = nil
-      @css_scanner = nil
+      @css_scanner = CssScanner.new(policy)
       @param_tag = param_tag
     end
 
     def error(text)
-      #puts "SAX Error #{text}"
+      puts "SAX Error #{text}"
     end
 
     def warning(text)
@@ -122,7 +122,11 @@ module AntiSamy
         @handler.characters(tmp)
         @stack.push(:filter)
       elsif tag.nil?
-        @handler.errors << ScanMessage.new(ScanMessage::ERROR_TAG_NOT_IN_POLICY,name)
+        # We ignore missing HTML and BODY tags since we are fragment parsing, but the 
+        # Nokogiri HTML::SAX parser injects HTML/BODY if they are missing
+        unless name.eql?("html") or name.eql?("body")
+          @handler.errors << ScanMessage.new(ScanMessage::ERROR_TAG_NOT_IN_POLICY,name)
+        end
         @stack.push(:filter)
       elsif tag.action.eql?(Policy::ACTION_FILTER)
         @handler.errors << ScanMessage.new(ScanMessage::ERROR_TAG_FILTERED,name)
@@ -148,14 +152,15 @@ module AntiSamy
             # check if the attribute is a style
             if a_name.eql?("style")
               # Handle Style tags
-              # begin
-              #   results = @css_scanner.scan_inline(a_value,name,@policy.max_input)
-              #   valid_attributes << [a_name,results.clean_html]
-              #   @handler.errors << results.errors
-              #   @handler.errors.flatten!
-              # rescue Exception => e
-              #   @handler.errors << ScanMessage.new(ScanMessage::ERROR_CSS_ATTRIBUTE_MALFORMED,name,@handler.encode_text(value))
-              # end
+               begin
+                 results = @css_scanner.scan_inline(a_value,name,@policy.max_input)
+                 valid_attributes << [a_name,results.clean_html]
+                 @handler.errors << results.errors
+                 @handler.errors.flatten!
+               rescue Exception => e
+                 puts e
+                 @handler.errors << ScanMessage.new(ScanMessage::ERROR_CSS_ATTRIBUTE_MALFORMED,name,@handler.encode_text(a_value))
+               end
             elsif !attrib.nil? # Attribute is not nil lets check it
               valid = false
               attrib.values.each do |av|
@@ -167,7 +172,7 @@ module AntiSamy
               end
               unless valid
                 attrib.expressions.each do |ae|
-                  if a_value.downcase =~ ae
+                  if a_value =~ ae
                     valid_attributes << [a_name,a_value]
                     valid = true
                     break
@@ -252,20 +257,21 @@ module AntiSamy
       elsif @stack.peek?(:css)
         @stack.pop
         # Do css stuff here
-        # begin
-        #   results = @css_scanner.scan_tyle_sheet(@css_content,@policy.max_input)
-        #   @handler.errors << results.errors
-        #   @handler.errors.flatten!
-        #   unless results.clean_html.nil? or results.clean_html.empty?
-        #     @handler.start_element(element,css_attributes)
-        #     @handler.characters results.clean_html
-        #     @handler.end_element(element)
-        #   end
-        # rescue Exception => e
-        #   @handler.errors << ScanMessage.new(ScanMessage::ERROR_CSS_TAG_MALFORMED,name,@handler.encode_text(@css_content))
-        # ensure
-        # @css_content = nil
-        # @css_attributes = nil
+         begin
+           results = @css_scanner.scan_sheet(@css_content,@policy.max_input)
+           @handler.errors << results.errors
+           @handler.errors.flatten!
+           unless results.clean_html.nil? or results.clean_html.empty?
+             @handler.start_element(element,css_attributes)
+             @handler.characters results.clean_html
+             @handler.end_element(element)
+           end
+         rescue Exception => e
+           @handler.errors << ScanMessage.new(ScanMessage::ERROR_CSS_TAG_MALFORMED,name,@handler.encode_text(@css_content))
+         ensure
+           @css_content = nil
+           @css_attributes = nil
+         end
       else
         @stack.pop
         @handler.end_element(name)

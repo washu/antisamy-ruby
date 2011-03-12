@@ -17,11 +17,13 @@ module AntiSamy
     end
 
     it "should tak our input and remove the script tags" do
-      input = "<p>Hi</p><script> some junk</script>"
+      input = "<p style='font-size: 16px'>Hi</p><script> some junk</script>"
       expec = "<p>Hi</p>"
       p = AntiSamy.policy(policy_file)
       r = AntiSamy.scan(input,p)
       r.clean_html.should == expec
+      puts r.messages.inspect
+      r.messages.size.should == 2 # error 1 for script tag, error 2 for style tag
     end
 
   end
