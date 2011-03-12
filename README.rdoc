@@ -32,7 +32,7 @@ Please check policy-examples[https://github.com/washu/antisamy-ruby/tree/master/
 == csspool
 
 We use a forked version of csspool 0.2.6 within antysamy, you can find the license
-for csspool in the rsac directory. csspool was re-namespaced to avoid any conflicts and updated for 1.9.2 ruby compatabilty
+for csspool in the rsac[https://github.com/washu/antisamy-ruby/tree/master/lib/antisamy/csspool] directory. csspool was re-namespaced to avoid any conflicts and updated for 1.9.2 ruby compatabilty
 
 == Copyright
 
