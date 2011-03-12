@@ -29,6 +29,11 @@ Please check policy-examples[https://github.com/washu/antisamy-ruby/tree/master/
 * Make sure to add tests for it. This is important so I don't break it in a future version unintentionally.
 * Please try not to mess with the Rakefile, version, or history. If you want to have your own version, or is otherwise necessary, that is fine, but please isolate to its own commit so I can cherry-pick around it.
 
+== csspool
+
+We use a forked version of csspool 0.2.6 within antysamy, you can find the license
+for csspool in the rsac directory. csspool was re-namespaced to avoid any conflicts and updated for 1.9.2 ruby compatabilty
+
 == Copyright
 
 Copyright (c) 2011 Sal Scotto. See LICENSE.txt for
