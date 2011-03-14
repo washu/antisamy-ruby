@@ -177,7 +177,7 @@ module AntiSamy
               unless valid
                 attrib.expressions.each do |ae|
                   mc = ae.match(a_value)
-                  if mc and mc.size == a_value.size
+                  if mc and mc.to_s == a_value
                     valid_attributes << [a_name,a_value]
                     valid = true
                     break

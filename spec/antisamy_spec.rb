@@ -85,8 +85,8 @@ module AntiSamy
       "<STYLE>BODY{-moz-binding:url(\"http://ha.ckers.org/xssmoz.xml#xss\")}</STYLE>" => "xss",
       "<STYLE>li {list-style-image: url(\"javascript:alert('XSS')\");}</STYLE><UL><LI>XSS" => "javascript",
       "<IMG SRC='vbscript:msgbox(\"XSS\")'>" => "vbscript",
-      "<a . href=\"http://www.test.com\">" => "href",
-      "<a - href=\"http://www.test.com\">" => "href",
+      "<a . href=\"http://www.test.com\">" => " . ",
+      "<a - href=\"http://www.test.com\">" => "-",
       "<META HTTP-EQUIV=\"refresh\" CONTENT=\"0; URL=http://;URL=javascript:alert('XSS');\">" => "meta",
       "<META HTTP-EQUIV=\"refresh\" CONTENT=\"0;url=javascript:alert('XSS');\">" => "meta",
       "<META HTTP-EQUIV=\"refresh\" CONTENT=\"0;url=data:text/html;base64,PHNjcmlwdD5hbGVydCgnWFNTJyk8L3NjcmlwdD4K\">" => "meta",
@@ -114,7 +114,7 @@ module AntiSamy
       "<a href='aim: &c:\\windows\\system32\\calc.exe' ini='C:\\Documents and Settings\\All Users\\Start Menu\\Programs\\Startup\\pwnd.bat'>" => "calc.exe",
       "<!--\n<A href=\n- --><a href=javascript:alert:document.domain>test-->" => "javascript",
       "<a></a style=\"\"xx:expr/**/ession(document.appendChild(document.createElement('script')).src='http://h4k.in/i.js')\">" => "<a style=",
-      "<a onblur=\"alert(secret)\" href=\"http://www.google.com\">Google</a>" => "href",
+      "<a onblur=\"alert(secret)\" href=\"http://www.google.com\">Google</a>" => "blur",
       "<b><i>Some Text</b></i>" => "<i />",
       "<div style=\"font-family: Geneva, Arial, courier new, sans-serif\">" => "font-family",
       "<style type=\"text/css\"><![CDATA[P {  margin-bottom: 0.08in; } ]]></style>" => "margin"
@@ -130,6 +130,12 @@ module AntiSamy
       input = "<style>@import url(http://www.owasp.org/skins/monobook/main.css);@import url(http://www.w3schools.com/stdtheme.css);@import url(http://www.google.com/ig/f/t1wcX5O39cc/ig.css); </style>"
       r = AntiSamy.scan(input,policy_object)
       r.clean_html.should_not be_empty
+    end
+    
+    it "should not touch this url" do
+      input = "<a href=\"http://www.aspectsecurity.com\">Aspect Security</a>"
+      r = AntiSamy.scan(input,policy_object)
+      r.clean_html.should == input      
     end
     
   end
