@@ -10,7 +10,14 @@ module AntiSamy
       p = AntiSamy.policy(policy_file)
       p.should_not == nil
     end
-
+    
+    it "should wrap plain text" do
+      input = "Hi"
+      p = AntiSamy.policy(policy_file)
+      r = AntiSamy.scan(input,p)
+      r.clean_html.should == "<p>#{input}</p>"
+    end
+    
     it "should scan our sample html and change nothing" do
       input = "<p>Hi</p>"
       p = AntiSamy.policy(policy_file)
