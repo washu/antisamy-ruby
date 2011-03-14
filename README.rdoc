@@ -5,7 +5,7 @@ user-supplier HTML and CSS. Please check out the AntiSamy project over at OWASP[
 
 == TODO
 
-* Add CSS scrubbing support
+* At some point support CSS3
 
 == Synopsis
 
