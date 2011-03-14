@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{antisamy}
-  s.version = "0.0.1"
+  s.version = "0.2.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Sal Scotto"]
-  s.date = %q{2011-03-07}
+  s.date = %q{2011-03-14}
   s.description = %q{
     AntiSamy is a library to clean user-supplied HTML/CSS. This gem is a port of the anti-samy framework created for OWASP (http://www.owasp.org/index.php/Category:OWASP_AntiSamy_Project)
     AntiSamy works by using a policy to removed any dangerous input you specify from attributes to tags. This gem is built using nokogiri
@@ -21,6 +21,42 @@ Gem::Specification.new do |s|
   ]
   s.files = [
     "lib/antisamy.rb",
+    "lib/antisamy/css/css_filter.rb",
+    "lib/antisamy/css/css_scanner.rb",
+    "lib/antisamy/css/css_validator.rb",
+    "lib/antisamy/csspool/rsac.rb",
+    "lib/antisamy/csspool/rsac/sac.rb",
+    "lib/antisamy/csspool/rsac/sac/conditions.rb",
+    "lib/antisamy/csspool/rsac/sac/conditions/attribute_condition.rb",
+    "lib/antisamy/csspool/rsac/sac/conditions/begin_hyphen_condition.rb",
+    "lib/antisamy/csspool/rsac/sac/conditions/class_condition.rb",
+    "lib/antisamy/csspool/rsac/sac/conditions/combinator_condition.rb",
+    "lib/antisamy/csspool/rsac/sac/conditions/condition.rb",
+    "lib/antisamy/csspool/rsac/sac/conditions/id_condition.rb",
+    "lib/antisamy/csspool/rsac/sac/conditions/one_of_condition.rb",
+    "lib/antisamy/csspool/rsac/sac/conditions/pseudo_class_condition.rb",
+    "lib/antisamy/csspool/rsac/sac/document_handler.rb",
+    "lib/antisamy/csspool/rsac/sac/error_handler.rb",
+    "lib/antisamy/csspool/rsac/sac/generated_parser.rb",
+    "lib/antisamy/csspool/rsac/sac/generated_property_parser.rb",
+    "lib/antisamy/csspool/rsac/sac/lexeme.rb",
+    "lib/antisamy/csspool/rsac/sac/lexical_unit.rb",
+    "lib/antisamy/csspool/rsac/sac/parse_exception.rb",
+    "lib/antisamy/csspool/rsac/sac/parser.rb",
+    "lib/antisamy/csspool/rsac/sac/property_parser.rb",
+    "lib/antisamy/csspool/rsac/sac/selectors.rb",
+    "lib/antisamy/csspool/rsac/sac/selectors/child_selector.rb",
+    "lib/antisamy/csspool/rsac/sac/selectors/conditional_selector.rb",
+    "lib/antisamy/csspool/rsac/sac/selectors/descendant_selector.rb",
+    "lib/antisamy/csspool/rsac/sac/selectors/element_selector.rb",
+    "lib/antisamy/csspool/rsac/sac/selectors/selector.rb",
+    "lib/antisamy/csspool/rsac/sac/selectors/sibling_selector.rb",
+    "lib/antisamy/csspool/rsac/sac/selectors/simple_selector.rb",
+    "lib/antisamy/csspool/rsac/sac/token.rb",
+    "lib/antisamy/csspool/rsac/sac/tokenizer.rb",
+    "lib/antisamy/csspool/rsac/stylesheet.rb",
+    "lib/antisamy/csspool/rsac/stylesheet/rule.rb",
+    "lib/antisamy/csspool/rsac/stylesheet/stylesheet.rb",
     "lib/antisamy/html/handler.rb",
     "lib/antisamy/html/sax_filter.rb",
     "lib/antisamy/html/scanner.rb",
