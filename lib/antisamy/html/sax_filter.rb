@@ -44,11 +44,9 @@ module AntiSamy
     end
 
     def error(text)
-      puts "SAX Error #{text}"
     end
 
     def warning(text)
-      puts "SAX Warning #{text}"
     end
 
     # Always create a HTML document unless the DECL was set beforehand
@@ -127,12 +125,19 @@ module AntiSamy
         unless name.eql?("html") or name.eql?("body")
           @handler.errors << ScanMessage.new(ScanMessage::ERROR_TAG_NOT_IN_POLICY,name)
         end
-        @stack.push(:filter)
+        # Nokogiri work around for a style tag being auto inserted inot head
+        if name.eql?("head")
+          @stack.push(:remove)
+        else
+          @stack.push(:filter)
+        end
       elsif tag.action.eql?(Policy::ACTION_FILTER)
         @handler.errors << ScanMessage.new(ScanMessage::ERROR_TAG_FILTERED,name)
         @stack.push(:filter)
       elsif tag.action.eql?(Policy::ACTION_VALIDATE)
         # Handle validation
+        remove_tag = false
+        filter_tag = false
         is_style = name.include?("style")
         if is_style
           @stack.push(:css)
@@ -140,8 +145,6 @@ module AntiSamy
           @css_attributes = []
         else
           # Validate attributes
-          remove_tag = false
-          filter_tag = false
           attributes.each do |pair|
             a_name = pair.first
             a_value = pair.last
@@ -158,7 +161,6 @@ module AntiSamy
                  @handler.errors << results.errors
                  @handler.errors.flatten!
                rescue Exception => e
-                 puts e
                  @handler.errors << ScanMessage.new(ScanMessage::ERROR_CSS_ATTRIBUTE_MALFORMED,name,@handler.encode_text(a_value))
                end
             elsif !attrib.nil? # Attribute is not nil lets check it
@@ -172,7 +174,8 @@ module AntiSamy
               end
               unless valid
                 attrib.expressions.each do |ae|
-                  if a_value =~ ae
+                  mc = ae.match(a_value)
+                  if mc and mc.size == a_value.size
                     valid_attributes << [a_name,a_value]
                     valid = true
                     break
@@ -203,7 +206,7 @@ module AntiSamy
         elsif filter_tag
           @stack.push(:filter)
         else
-          if name.eql?("a") and @policy.directive(Policy::ANCHROS_NOFOLLOW) =~ /true/i
+          if name.eql?("a") and @policy.directive(Policy::ANCHROS_NOFOLLOW)
             valid_attributes << ["rel","nofollow"]
           end
           if masquerade
@@ -211,7 +214,7 @@ module AntiSamy
             valid_attributes << ["name",embed_name]
             valid_attributes << ["value",embed_value]
           end
-          @stack.push(:keep)
+          @stack.push(:keep) unless @stack.peek?(:css)
         end
         # End validation action
       elsif tag.action.eql?(Policy::ACTION_TRUNCATE)
@@ -239,7 +242,7 @@ module AntiSamy
     # Add character data to the current tag
     def characters(text)
       unless text =~ /\S/ # skip whitespace
-        return unless @policy.directive(Policy::PRESERVE_SPACE) =~ /true/i
+        return unless @policy.directive(Policy::PRESERVE_SPACE)
       end
       if @stack.peek?(:css)
         @css_content << text

@@ -26,7 +26,25 @@ module AntiSamy
     ERROR_ATTRIBUTE_NOT_IN_POLICY = "error.attribute.notfound"
     # error.attribute.invalid
     ERROR_ATTRIBUTE_INVALID = "error.attribute.invalid"
-
+    # comment removed
+    ERROR_COMMENT_REMOVED = "error.comment.removed"
+    # tag rule not found
+    ERROR_CSS_TAG_RULE_NOTFOUND = "error.css.tag.notfound"
+    # style sheet nto found
+    ERROR_STYLESHEET_RULE_NOTFOUND = "error.stylesheet.notfound"
+    # embedded stylesheets disabled
+    ERROR_CSS_IMPORT_DISABLED = "error.css.import.disabled"
+    # bad uri
+    ERROR_CSS_IMPORT_URL_INVALID = "error.css.import.uri.invalid"
+    # disallowed selector
+    ERROR_CSS_TAG_SELECTOR_DISALLOWED = "error.css.tag.removed"
+    # invalid for style sheet
+    ERROR_STYLESHEET_SELECTOR_DISALLOWED = "error.style.tag.removed"
+    # invlaid css tag property
+    ERROR_CSS_TAG_PROPERTY_INVALID = "error.css.property.invalid"
+    # invid style sheet roperty tag
+    ERROR_STYLESHEET_PROPERTY_INVALID = "error.stylesheet.css.property.invalid"
+    
     attr_reader :tag, :content, :value, :msgkey
     def initialize(msgkey, tag, content=nil,value=nil)
       @msgkey = msgkey

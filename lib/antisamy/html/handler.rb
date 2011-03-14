@@ -14,6 +14,7 @@ module AntiSamy
 
     # HTML entity encode some text
     def encode_text(text)
+      return "" if text.nil?
       @document.encode_special_chars(text)
     end
 
@@ -40,6 +41,9 @@ module AntiSamy
 
     # start an element
     def start_element(name,attributes)
+      if name.eql?("head") or name.eql?("body") or name.eql?("html")
+        return
+      end
       elem = Nokogiri::XML::Element.new(name, @document)
       attributes.each do |attrib_pair|
         elem[attrib_pair.first] = attrib_pair.last

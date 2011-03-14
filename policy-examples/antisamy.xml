@@ -159,7 +159,7 @@ Slashdot allowed tags taken from "Reply" page:
 		<tag name="ul" action="validate"/>
 		<tag name="ol" action="validate"/>
 		<tag name="li" action="validate"/>
-
+		
 	</tag-rules>
 
 

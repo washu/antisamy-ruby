@@ -7,7 +7,6 @@ module RSAC
       class << self
         def build(name, raw)
           condition, value = raw
-
           case condition
           when "~="
             OneOfCondition.new(name, value)
@@ -21,7 +20,6 @@ module RSAC
 
       def initialize(local_name, value, specified, condition_type=:SAC_ATTRIBUTE_CONDITION)
         super(condition_type)
-
         @local_name = local_name
         @value = value
         @specified = specified
