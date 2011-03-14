@@ -2,7 +2,7 @@ require 'uri'
 module AntiSamy
   class CssFilter < RSAC::DocumentHandler
     
-    attr_accessor :clean, :errors
+    attr_accessor :clean, :errors, :style_sheets
     
     def initialize(policy,tag)
       @policy = policy
@@ -11,7 +11,7 @@ module AntiSamy
       @clean = ''
       @tag = tag
       @selector_open = false
-      @sytle_sheets = []
+      @style_sheets = []
       @inline = !tag.nil?
       @media_open = false
       @current_media = nil
@@ -28,7 +28,26 @@ module AntiSamy
     def comment(text)
       @errors << ScanMessage.new(ScanMessage::ERROR_COMMENT_REMOVED,@tag,text)
     end
+    
+    def error(exception)
+      #puts exception
+    end
 
+    def fatal_error(exception)
+      #puts exception
+    end
+    
+    def error(t)
+      #puts t
+    end
+    
+    def warn(t)
+      #puts t
+    end
+    
+    def warning_error(exception)
+      #puts exception
+    end    
     # Receive notification of an unknown at rule not supported by this parser.
     def ignorable_at_rule(at_rule)
       if inline
@@ -45,8 +64,9 @@ module AntiSamy
     # Called on an import statement
     def import_style(uri, media, default_namespace_uri = nil)
       # check directive
-      unless @policy.directive("embedStyleSheets")
-        @errors << ScanMessage.new(ScanMessage::ERROR_STYLESHEET_RULE_NOTFOUND,@tag,uri)
+      unless @policy.directive(Policy::EMBED_STYLESHEETS)
+        @errors << ScanMessage.new(ScanMessage::ERROR_CSS_IMPORT_DISABLED,@tag,uri)
+        return
       end
       # check for null uri
       if uri.nil?
@@ -54,7 +74,8 @@ module AntiSamy
       end
       # check uri rules
       begin
-        link = URI.parse(uri)
+        luri = RSAC::LexicalURI.new(uri)
+        link = URI.parse(luri.string_value)
         link.normalize!
         onsite = @policy.expression("offsiteURL")
         offsite = @policy.expression("onsiteURL")
@@ -103,6 +124,7 @@ module AntiSamy
         valid = false
         begin
           @validator.valid_selector?(name,s)
+          valid = true
         rescue Exception => e
           if @inline
             @errors << ScanMessage.new(ScanMessage::ERROR_CSS_TAG_SELECTOR_NOTFOUND,@tag,name)
@@ -120,9 +142,9 @@ module AntiSamy
         else
           # not allowed selector
           if @inline
-            @errors << ScanMessage.new(ScanMessage::ERROR_CSS_IMPORT_URL_INVALID,@tag,name)
+            @errors << ScanMessage.new(ScanMessage::ERROR_CSS_TAG_SELECTOR_DISALLOWED,@tag,name)
           else
-            @errors << ScanMessage.new(ScanMessage::ERROR_STYLESHEET_SELECTOR_NOTFOUND,@tag,name)
+            @errors << ScanMessage.new(ScanMessage::ERROR_STYLESHEET_SELECTOR_DISALLOWED,@tag,name)
           end
         end
       end

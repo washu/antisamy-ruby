@@ -7,17 +7,19 @@ module AntiSamy
     
     # Check to see if this selector is valid according to the policy
     def valid_selector?(name,selector)
+      #puts selector.inspect
+      return false if selector.nil?
       case selector.selector_type
       when :SAC_CHILD_SELECTOR
-        return valid_selector?(name,selector.selector) && valid_selector(name,selector.ancestor)
+        return valid_selector?(name,selector.selector) && valid_selector?(name,selector.ancestor)
       when :SAC_CONDITIONAL_SELECTOR
-        return valid_selector?(name,selector.selector) && valid_selector(name,selector.condition)
+        return valid_selector?(name,selector.selector) && valid_condition?(name,selector.condition)
       when :SAC_DESCENDANT_SELECTOR
-        return valid_selector?(name,selector.selector) && valid_selector(name,selector.ancestor)
+        return valid_selector?(name,selector.selector) && valid_selector?(name,selector.ancestor)
       when :SAC_ELEMENT_NODE_SELECTOR
         return valid_simple_selector(selector)
       when :SAC_DIRECT_ADJACENT_SELECTOR
-        return valid_selector?(name,selector.selector) && valid_selector(name,selector.sibling)
+        return valid_selector?(name,selector.selector) && valid_selector?(name,selector.sibling)
       when :SAC_ANY_NODE_SELECTOR
         return valid_simple_selector(selector)
       else
@@ -40,10 +42,10 @@ module AntiSamy
     
     # Check if a given condition is valid according to the policy
     def valid_condition?(name,condition)
-      type = condtion.condition_type
+      type = condition.condition_type
       case type
       when :SAC_AND_CONDITION
-        a = condtion.first
+        a = condition.first
         b = condition.second
         return valid_condition?(name,a) && valid_condition?(name,b)
       when :SAC_CLASS_CONDITION

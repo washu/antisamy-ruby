@@ -87,7 +87,6 @@ module AntiSamy
       "<IMG SRC='vbscript:msgbox(\"XSS\")'>" => "vbscript",
       "<a . href=\"http://www.test.com\">" => "href",
       "<a - href=\"http://www.test.com\">" => "href",
-      "<style>" => "style",
       "<META HTTP-EQUIV=\"refresh\" CONTENT=\"0; URL=http://;URL=javascript:alert('XSS');\">" => "meta",
       "<META HTTP-EQUIV=\"refresh\" CONTENT=\"0;url=javascript:alert('XSS');\">" => "meta",
       "<META HTTP-EQUIV=\"refresh\" CONTENT=\"0;url=data:text/html;base64,PHNjcmlwdD5hbGVydCgnWFNTJyk8L3NjcmlwdD4K\">" => "meta",
@@ -118,13 +117,19 @@ module AntiSamy
       "<a onblur=\"alert(secret)\" href=\"http://www.google.com\">Google</a>" => "href",
       "<b><i>Some Text</b></i>" => "<i />",
       "<div style=\"font-family: Geneva, Arial, courier new, sans-serif\">" => "font-family",
-      "<style type=\"text/css\"><![CDATA[P {  margin-bottom: 0.08in; } ]]></style>" => "style"
+      "<style type=\"text/css\"><![CDATA[P {  margin-bottom: 0.08in; } ]]></style>" => "margin"
       
     }.each_pair do |k,v|
       it "should remove #{v} from #{k} for href attacks" do
         r = AntiSamy.scan(k,policy_object)
         r.clean_html.should_not include(v)
       end
+    end
+    
+    it "shoud import some stylesheets" do
+      input = "<style>@import url(http://www.owasp.org/skins/monobook/main.css);@import url(http://www.w3schools.com/stdtheme.css);@import url(http://www.google.com/ig/f/t1wcX5O39cc/ig.css); </style>"
+      r = AntiSamy.scan(input,policy_object)
+      r.clean_html.should_not be_empty
     end
     
   end

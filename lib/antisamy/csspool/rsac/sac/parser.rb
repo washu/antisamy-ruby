@@ -62,7 +62,7 @@ module RSAC
     # We have to eliminate matching pairs.
     # http://www.w3.org/TR/CSS21/syndata.html#parsing-errors
     # See the malformed declarations section
-    def eliminate_pair_matches(error_value)
+    def eliminate_pair_matches(error_value) 
       pairs = {}
       pairs['"'] = '"'
       pairs["'"] = "'"
@@ -70,7 +70,7 @@ module RSAC
         pairs['['] = ']'
         pairs['('] = ')'
 
-        error_value.strip!
+        error_value.to_s.strip!
         if pairs[error_value]
           logger.warn("Eliminating pair for: #{error_value}") if logger
           loop {

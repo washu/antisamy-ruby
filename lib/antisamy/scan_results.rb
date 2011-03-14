@@ -39,11 +39,21 @@ module AntiSamy
     # disallowed selector
     ERROR_CSS_TAG_SELECTOR_DISALLOWED = "error.css.tag.removed"
     # invalid for style sheet
-    ERROR_STYLESHEET_SELECTOR_DISALLOWED = "error.style.tag.removed"
+    ERROR_STYLESHEET_SELECTOR_DISALLOWED = "error.style.tag.notallowed"
     # invlaid css tag property
     ERROR_CSS_TAG_PROPERTY_INVALID = "error.css.property.invalid"
     # invid style sheet roperty tag
     ERROR_STYLESHEET_PROPERTY_INVALID = "error.stylesheet.css.property.invalid"
+    # exceed alloted imports
+    ERROR_CSS_IMPORT_EXCEEDED = "error.import.exceeded.sheets"
+    # exceede size
+    ERROR_CSS_IMPORT_INPUT_SIZE = "error.import.exceeded.size"
+    # Failed to import
+    ERROR_CSS_IMPORT_FAILURE = "error.import.bad.uri"
+    # selector not found
+    ERROR_STYLESHEET_SELECTOR_NOTFOUND = "error.css.stylesheet.selector.notfound"
+    # selector in css not fond
+    ERROR_CSS_TAG_SELECTOR_NOTFOUND = "error.css.tag.selector.notfound"
     
     attr_reader :tag, :content, :value, :msgkey
     def initialize(msgkey, tag, content=nil,value=nil)

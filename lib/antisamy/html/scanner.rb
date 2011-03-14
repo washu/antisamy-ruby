@@ -25,7 +25,7 @@ module AntiSamy
     # will raise an error if nil input or the maximum input size is exceeded
     def scan(input, input_encode, output_encoder)
       raise ArgumentError if input.nil?
-      raise ScanError, "Max input Exceeded" if input.size > @policy.max_input
+      raise ScanError, "Max input Exceeded #{input.size} > #{@policy.max_input}" if input.size > @policy.max_input
       # check poilcy stuff
       handler = Handler.new(@policy,output_encoder)
       scanner = SaxFilter.new(@policy,handler,@@basic_param_tag_rule)

@@ -29,13 +29,16 @@ module AntiSamy
     MAX_INPUT = "maxInputSize"
     USE_XHTML = "userXHTML"
     FORMAT_OUTPUT = "formatOutput"
+    # will we allow embedded style sheets
     EMBED_STYLESHEETS = "embedStyleSheets"
+    # Connection timeout in miliseconds
     CONN_TIMEOUT = "conenctionTimeout"
     ANCHROS_NOFOLLOW = "nofollowAnchors"
     VALIDATE_P_AS_E = "validateParamAsEmbed"
     PRESERVE_SPACE = "preserveSpace"
     PRESERVE_COMMENTS = "preserveComments"
     ON_UNKNOWN_TAG = "onUnknownTag"
+    MAX_SHEETS = "maxStyleSheetImports"
 
     # Class method to fetch the schema
     def self.schema
@@ -192,15 +195,17 @@ module AntiSamy
       section.element_children.each do |dir|
         name = dir["name"]
         value = dir["value"]
-        @directives[name] = value
-        if name.eql?("maxInputSize")
+        if name.eql?("maxInputSize") 
           @max_input = value.to_i
         else
-          if value =~ /true/
+          if name.eql?("connectionTimeout") or name.eql?("maxStyleSheetImports")
+            value = value.to_i
+          elsif value =~ /true/i
             value = true
           else
             value = false
           end
+          @directives[name] = value
         end
       end
     end

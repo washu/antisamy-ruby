@@ -157,8 +157,10 @@ module AntiSamy
               # Handle Style tags
                begin
                  results = @css_scanner.scan_inline(a_value,name,@policy.max_input)
-                 valid_attributes << [a_name,results.clean_html]
-                 @handler.errors << results.errors
+                 unless result.clean_html.empty?
+                   valid_attributes << [a_name,results.clean_html]
+                 end
+                 @handler.errors << results.messages
                  @handler.errors.flatten!
                rescue Exception => e
                  @handler.errors << ScanMessage.new(ScanMessage::ERROR_CSS_ATTRIBUTE_MALFORMED,name,@handler.encode_text(a_value))
@@ -262,14 +264,19 @@ module AntiSamy
         # Do css stuff here
          begin
            results = @css_scanner.scan_sheet(@css_content,@policy.max_input)
-           @handler.errors << results.errors
+           @handler.errors << results.messages
            @handler.errors.flatten!
            unless results.clean_html.nil? or results.clean_html.empty?
-             @handler.start_element(element,css_attributes)
+             @handler.start_element(name,@css_attributes)
              @handler.characters results.clean_html
-             @handler.end_element(element)
+             @handler.end_element(name)
+           else
+             @handler.start_element(name,@css_attributes)
+             @handler.characters "/* */"
+             @handler.end_element(name)             
            end
          rescue Exception => e
+           puts e
            @handler.errors << ScanMessage.new(ScanMessage::ERROR_CSS_TAG_MALFORMED,name,@handler.encode_text(@css_content))
          ensure
            @css_content = nil
