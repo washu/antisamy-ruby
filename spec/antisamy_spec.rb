@@ -245,7 +245,6 @@ module AntiSamy
 			</body></html>
 		IN
 		r = AntiSamy.scan(input,policy_object_cust)
-		puts r.inspect
 	end
 	
   end
