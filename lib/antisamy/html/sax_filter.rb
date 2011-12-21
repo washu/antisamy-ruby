@@ -33,7 +33,7 @@ module AntiSamy
   end
 
   class SaxFilter < Nokogiri::XML::SAX::Document
-    def initialize(policy,handler,param_tag)
+    def initialize(policy,handler,param_tag,fragment = true)
       @policy = policy
       @handler = handler
       @stack = Stack.new
@@ -41,6 +41,7 @@ module AntiSamy
       @css_attributes = nil
       @css_scanner = CssScanner.new(policy)
       @param_tag = param_tag
+	  @fragment = fragment
     end
 
     def error(text)
@@ -122,11 +123,13 @@ module AntiSamy
       elsif tag.nil?
         # We ignore missing HTML and BODY tags since we are fragment parsing, but the 
         # Nokogiri HTML::SAX parser injects HTML/BODY if they are missing
-        unless name.eql?("html") or name.eql?("body")
-          @handler.errors << ScanMessage.new(ScanMessage::ERROR_TAG_NOT_IN_POLICY,name)
-        end
-        # Nokogiri work around for a style tag being auto inserted inot head
-        if name.eql?("head")
+        if @fragment
+			unless name.eql?("html") or name.eql?("body")
+				@handler.errors << ScanMessage.new(ScanMessage::ERROR_TAG_NOT_IN_POLICY,name)
+			end
+			# Nokogiri work around for a style tag being auto inserted inot head
+		end
+		if name.eql?("head") && @fragment
           @stack.push(:remove)
         else
           @stack.push(:filter)
@@ -208,7 +211,7 @@ module AntiSamy
         elsif filter_tag
           @stack.push(:filter)
         else
-          if name.eql?("a") and @policy.directive(Policy::ANCHROS_NOFOLLOW)
+          if name.eql?("a") and @policy.directive(Policy::ANCHORS_NOFOLLOW)
             valid_attributes << ["rel","nofollow"]
           end
           if masquerade

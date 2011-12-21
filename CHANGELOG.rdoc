@@ -2,3 +2,12 @@
 
 * Initial commit.
 * CSS scanning is currently not implmented so any CSS will be passed alonger verbatim
+
+== 0.2.1
+
+* CSS version2 implemented
+
+== 0.3
+
+* Proper fragment support and policy now provides a allowed-empty section to customize
+

@@ -3,13 +3,14 @@ module AntiSamy
   class Handler
 
     attr_accessor :errors
-    def initialize(policy,output) #:nodoc:
+    def initialize(policy,output,fragment = true) #:nodoc:
       @document = Nokogiri::HTML::DocumentFragment.parse("")
       @current_node = @document
       @policy = policy
       @preserve_whitespace = @policy.directive(Policy::PRESERVE_SPACE)
       @errors = []
       @output_encoding = output
+	  @fragment = fragment
     end
 
     # HTML entity encode some text
@@ -41,9 +42,11 @@ module AntiSamy
 
     # start an element
     def start_element(name,attributes)
-      if name.eql?("head") or name.eql?("body") or name.eql?("html")
-        return
-      end
+	  if @fragment
+		if name.eql?("head") or name.eql?("body") or name.eql?("html")
+			return
+		end
+	  end
       elem = Nokogiri::XML::Element.new(name, @document)
       attributes.each do |attrib_pair|
         elem[attrib_pair.first] = attrib_pair.last
@@ -69,7 +72,17 @@ module AntiSamy
       if @current_node.nil? or !@current_node.name.eql?(name)
         return
       end
-      @current_node = @current_node.parent if @current_node.parent
+	  if @current_node.children.empty?
+		if @policy.allow_empty?(@current_node.name)
+			@current_node = @current_node.parent if @current_node.parent
+		else
+			tnode = @current_node
+			@current_node = @current_node.parent if @current_node.parent
+			tnode.remove
+		end
+	  else
+		@current_node = @current_node.parent if @current_node.parent
+	  end
     end
 
     # format the output applying any policy rules

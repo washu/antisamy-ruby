@@ -33,7 +33,7 @@ module AntiSamy
     EMBED_STYLESHEETS = "embedStyleSheets"
     # Connection timeout in miliseconds
     CONN_TIMEOUT = "conenctionTimeout"
-    ANCHROS_NOFOLLOW = "nofollowAnchors"
+    ANCHORS_NOFOLLOW = "nofollowAnchors"
     VALIDATE_P_AS_E = "validateParamAsEmbed"
     PRESERVE_SPACE = "preserveSpace"
     PRESERVE_COMMENTS = "preserveComments"
@@ -84,6 +84,9 @@ module AntiSamy
       @directives = Hash.new(false)
       @global_attrib = {}
       @encode_tags = []
+	  @allowed_empty = []
+	  @allowed_empty << ALLOWED_EMPTY
+	  @allowed_empty.flatten!
       parse(doc)
     end
 
@@ -146,7 +149,11 @@ module AntiSamy
     def expression(name)
       @common_regex[name]
     end
-
+	
+	def allow_empty?(name)
+		@allowed_empty.include?(name.downcase)
+	end
+	
     private
     def make_re(p,context) #:nodoc:
       output = StringIO.open('','w')
@@ -183,10 +190,28 @@ module AntiSamy
           process_tag_rules(section)
         elsif section.name.eql?("css-rules")
           process_css_rules(section)
+		elsif section.name.eql?("allowed-empty-tags")
+		  process_empty_tags(section)
         end
       end
     end
 
+	def process_empty_tags(section)# :nodoc:
+		# skip if we had no  section
+		return if section.element_children.nil?
+		section.element_children.each do |dir|
+			if dir.name.eql?("literal-list")
+				if dir.element_children
+					dir.element_children.each do |child|
+						tag = child["value"]
+						if tag and !tag.empty?
+							@allowed_empty << tag.downcase
+						end
+					end
+				end
+			end
+		end
+	end
     # process the directives section
     def process_directves(section) # :nodoc:
       # skip if we had no  section
@@ -404,6 +429,7 @@ __END__
 			<xsd:element name="tags-to-encode" type="TagsToEncodeList" minOccurs="0" maxOccurs="1"/>
 			<xsd:element name="tag-rules" type="TagRules" minOccurs="1" maxOccurs="1"/>
 			<xsd:element name="css-rules" type="CSSRules" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="allowed-empty-tags" type="AllowedEmptyTags" minOccurs="0" maxOccurs="1"/>
 		</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
@@ -461,15 +487,15 @@ __END__
 		<xsd:attribute name="name" use="required"/>
 		<xsd:attribute name="action" use="required">
 		  <xsd:simpleType>
-        <xsd:restriction base="xsd:string">
-          <xsd:enumeration value="validate"/>
-          <xsd:enumeration value="truncate"/>
-          <xsd:enumeration value="remove"/>
-          <xsd:enumeration value="filter"/>
-          <xsd:enumeration value="encode"/>
-        </xsd:restriction>
-      </xsd:simpleType>
-    </xsd:attribute>
+			<xsd:restriction base="xsd:string">
+				<xsd:enumeration value="validate"/>
+				<xsd:enumeration value="truncate"/>
+				<xsd:enumeration value="remove"/>
+				<xsd:enumeration value="filter"/>
+				<xsd:enumeration value="encode"/>
+			</xsd:restriction>
+		  </xsd:simpleType>
+		</xsd:attribute>
 	</xsd:complexType>
 	<xsd:complexType name="Attribute">
 		<xsd:sequence>
@@ -542,4 +568,10 @@ __END__
 		<xsd:attribute name="name" type="xsd:string" use="required"/>
 		<xsd:attribute name="cdata" type="xsd:string" use="required"/>
 	</xsd:complexType>
+	<xsd:complexType name="AllowedEmptyTags">
+        <xsd:sequence>
+            <xsd:element name="literal-list" type="LiteralList" minOccurs="1"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
 </xsd:schema>

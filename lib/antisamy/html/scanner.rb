@@ -26,9 +26,13 @@ module AntiSamy
     def scan(input, input_encode, output_encoder)
       raise ArgumentError if input.nil?
       raise ScanError, "Max input Exceeded #{input.size} > #{@policy.max_input}" if input.size > @policy.max_input
+	  fragment = true
+	  if input =~ /\<\s?html\s?.*?\>|DOCTYPE/im
+		fragment = false
+	  end
       # check poilcy stuff
-      handler = Handler.new(@policy,output_encoder)
-      scanner = SaxFilter.new(@policy,handler,@@basic_param_tag_rule)
+      handler = Handler.new(@policy,output_encoder,fragment)
+      scanner = SaxFilter.new(@policy,handler,@@basic_param_tag_rule,fragment)
       parser = Nokogiri::HTML::SAX::Parser.new(scanner,input_encode)
       #parser.parse(input)
       parser.parse(input) do |ctx|

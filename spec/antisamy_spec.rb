@@ -11,6 +11,59 @@ module AntiSamy
       p.should_not == nil
     end
     
+	it "should handle a missing head tag in a full document" do
+		input =<<-HTML
+		<html>
+		<body>some text</body>
+		</html>
+		HTML
+		p = AntiSamy.policy(policy_file)
+		r = AntiSamy.scan(input,p)
+		r.clean_html.gsub(/\n/,'').should == input.gsub(/\t|\n/,'')
+	end
+	
+	it "should handle a document and keep the html tag" do
+		input =<<-HTML
+		<html>
+		<head><title>sup</title></head>
+		<body>some text</body>
+		</html>
+		HTML
+		p = AntiSamy.policy(policy_file)
+		r = AntiSamy.scan(input,p)
+		r.clean_html.gsub(/\n/,'').should == input.gsub(/\t|\n/,'')
+	end
+	
+	it "should allow empty tags" do
+		input =<<-HTML
+		<html>
+		<head><title>sup</title></head>
+		<body>some text<br><div></div></body>
+		</html>
+		HTML
+		p = AntiSamy.policy(policy_file)
+		r = AntiSamy.scan(input,p)
+		r.clean_html.gsub(/\n/,'').should == input.gsub(/\t|\n/,'')	
+	end
+	
+	it "shoulw remove an empty tag as per the poilicy" do
+		input =<<-HTML
+		<html>
+		<head><title>sup</title></head>
+		<body>some text<br><h2/></body>
+		</html>
+		HTML
+		expect =<<-HTML
+		<html>
+		<head><title>sup</title></head>
+		<body>some text<br></body>
+		</html>
+		HTML
+		p = AntiSamy.policy(policy_file)
+		r = AntiSamy.scan(input,p)
+		r.clean_html.gsub(/\n/,'').should == expect.gsub(/\t|\n/,'')	
+	end
+	
     it "should wrap plain text" do
       input = "Hi"
       p = AntiSamy.policy(policy_file)
