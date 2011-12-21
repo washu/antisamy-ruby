@@ -4,7 +4,9 @@ module AntiSamy
   describe AntiSamy do
     let(:policy_file) {"#{File.join(File.dirname(__FILE__), '..', 'policy-examples')}/antisamy-testing.xml"}
     let(:strict_policy) {"#{File.join(File.dirname(__FILE__), '..', 'policy-examples')}/antisamy-anythinggoes.xml"}
+	let(:custom_policy) {"#{File.join(File.dirname(__FILE__), '..', 'policy-examples')}/antisamy-test2.xml"}
     let(:policy_object) {AntiSamy.policy(policy_file)}
+    let(:policy_object_cust) {AntiSamy.policy(custom_policy)}
 
     it "should load a policy" do
       p = AntiSamy.policy(policy_file)
@@ -202,6 +204,48 @@ module AntiSamy
 		input = "<style> div{transform:rotate(30deg);} </style>"
 		r = AntiSamy.scan(input,policy_object)
         r.clean_html.should == input
+	end
+	
+	it "should handle this html correctly" do
+		input = <<-IN
+			<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><META http-equiv="Content-Type" content="text/html; charset=utf-8"></head><body>
+			<div bgcolor="#343434">
+			<div></div>
+			<div>
+			<h3><a href="#0.1_">Section0</a></h3>
+			<div>
+			<p>Sed non urna. Donec et ante. Phasellus eu ligula.</p>
+			</div>
+			<h3><a href="#0.1_">Section1</a></h3>
+			<div>
+			<p>Sed non urna. Donec et ante. Phasellus eu ligula.</p>
+			</div>
+			<h3><a href="#0.1_">Section2</a></h3>
+			<div>
+			<p>Sed non urna. Donec et ante. Phasellus eu ligula.</p>
+			</div>
+			</div>
+			<div></div>
+			<div></div>
+			<div></div>
+			<ul>
+			<li><a href="#0.1_">Menu 1</a></li>
+			<li><a href="#0.1_">Menu 2</a></li>
+			<li><a href="#0.1_">Menu 3</a></li>
+			<li><a href="#0.1_">Menu 4</a></li>
+			<li><a href="#0.1_">Menu 5</a></li>
+			<li><a href="#0.1_">Menu 6</a></li>
+			</ul>
+			<h1>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation.</h1>
+			<img src="http://bgimg.png">
+			<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation.</p>
+			<h1>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation.</h1>
+			<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation.</p>
+			</div>
+			</body></html>
+		IN
+		r = AntiSamy.scan(input,policy_object_cust)
+		puts r.inspect
 	end
 	
   end

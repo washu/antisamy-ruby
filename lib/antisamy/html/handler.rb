@@ -76,6 +76,7 @@ module AntiSamy
 		if @policy.allow_empty?(@current_node.name)
 			@current_node = @current_node.parent if @current_node.parent
 		else
+			@errors << ScanMessage.new(ScanMessage::ERROR_TAG_EMPTY_NOT_ALLOWED,name)
 			tnode = @current_node
 			@current_node = @current_node.parent if @current_node.parent
 			tnode.remove
@@ -97,12 +98,13 @@ module AntiSamy
       if @policy.directive(Policy::OMIT_DOC_TYPE) || @policy.directive(Policy::OMIT_XML_DECL)
         options |= Nokogiri::XML::Node::SaveOptions::NO_DECLARATION
       end
-
+	  
       clean = ""
       if @policy.directive(Policy::USE_XHTML)
         options |= Nokogiri::XML::Node::SaveOptions::AS_XHTML
         clean = @document.to_xhtml(:encoding => @output_encoding, :indent=>indent,:save_with=>options)
       else
+		options |= Nokogiri::XML::Node::SaveOptions::AS_HTML
         clean = @document.to_html(:encoding => @output_encoding, :indent=>indent,:save_with=>options)
       end
       return clean

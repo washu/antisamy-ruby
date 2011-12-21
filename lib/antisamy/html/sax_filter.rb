@@ -49,7 +49,10 @@ module AntiSamy
 
     def warning(text)
     end
-
+	
+	def xmldecl version, encoding, standalone
+    end
+	
     # Always create a HTML document unless the DECL was set beforehand
     def start_document
     end
@@ -200,7 +203,7 @@ module AntiSamy
 
             else # attribute was null
               @handler.errors << ScanMessage.new(ScanMessage::ERROR_ATTRIBUTE_NOT_IN_POLICY,tag.name,a_name,@handler.encode_text(a_value))
-              if masquerade
+			  if masquerade
                 filter_tag = true
               end
             end

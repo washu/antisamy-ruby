@@ -2,6 +2,8 @@ module AntiSamy
   class ScanError < StandardError; end
   # Scan message, it will contain a message key, tag and optionally content, value
   class ScanMessage
+    # error.tag.empty
+	ERROR_TAG_EMPTY_NOT_ALLOWED = "error.tag.empty.not.allowed"
     # error.tag.notfound
     ERROR_TAG_NOT_IN_POLICY = "error.tag.notfound"
     # error.tag.removed

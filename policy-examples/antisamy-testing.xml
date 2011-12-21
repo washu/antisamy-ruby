@@ -982,7 +982,10 @@ http://www.w3.org/TR/html401/struct/global.html
                                
                 <tag name="fieldset" action="validate"/>
                 <tag name="legend" action="validate"/>
-               
+                <tag name="video" action="validate">
+					<attribute name="width"/>
+					<attribute name="height"/>
+				</tag>
         </tag-rules>
 
 
