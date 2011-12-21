@@ -198,5 +198,11 @@ module AntiSamy
       r.clean_html.should == input      
     end
     
+	it "should accept css3" do
+		input = "<style> div{transform:rotate(30deg);} </style>"
+		r = AntiSamy.scan(input,policy_object)
+        r.clean_html.should == input
+	end
+	
   end
 end
