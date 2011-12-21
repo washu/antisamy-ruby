@@ -39,20 +39,9 @@ module AntiSamy
     PRESERVE_COMMENTS = "preserveComments"
     ON_UNKNOWN_TAG = "onUnknownTag"
     MAX_SHEETS = "maxStyleSheetImports"
-
     # Class method to fetch the schema
     def self.schema
-      data = StringIO.new
-      File.open(__FILE__) do |f|
-        begin
-          line = f.gets
-        end until line.match(/^__END__$/)
-        while line = f.gets
-          data << line
-        end
-      end
-      data.rewind
-      data.read
+	  XSD
     end
 
     # Create a policy object.
@@ -411,167 +400,166 @@ module AntiSamy
         @css_rules[name.downcase] = prop
       end
     end
-  end
+		XSD = <<-SHEET
+	<?xml version="1.0" encoding="UTF-8"?>
+		<xsd:schema
+		  xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+			<xsd:element name="anti-samy-rules">
+				<xsd:complexType>
+				<xsd:sequence>
+					<xsd:element name="directives" type="Directives" maxOccurs="1" minOccurs="1"/>
+					<xsd:element name="common-regexps" type="CommonRegexps" maxOccurs="1" minOccurs="1"/>
+					<xsd:element name="common-attributes" type="AttributeList" maxOccurs="1" minOccurs="1"/>
+					<xsd:element name="global-tag-attributes" type="AttributeList" maxOccurs="1" minOccurs="1"/>
+					<xsd:element name="tags-to-encode" type="TagsToEncodeList" minOccurs="0" maxOccurs="1"/>
+					<xsd:element name="tag-rules" type="TagRules" minOccurs="1" maxOccurs="1"/>
+					<xsd:element name="css-rules" type="CSSRules" minOccurs="1" maxOccurs="1"/>
+					<xsd:element name="allowed-empty-tags" type="AllowedEmptyTags" minOccurs="0" maxOccurs="1"/>
+				</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:complexType name="Directives">
+				<xsd:sequence maxOccurs="unbounded">
+					<xsd:element name="directive" type="Directive" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="Directive">
+				<xsd:attribute name="name" use="required">
+				<xsd:simpleType>
+			  <xsd:restriction base="xsd:string">
+				<xsd:enumeration value="omitXmlDeclaration"/>
+				<xsd:enumeration value="omitDoctypeDeclaration"/>
+				<xsd:enumeration value="maxInputSize"/>
+				<xsd:enumeration value="useXHTML"/>
+				<xsd:enumeration value="embedStyleSheets"/>
+				<xsd:enumeration value="maxStyleSheetImports"/>
+				<xsd:enumeration value="connectionTimeout"/>
+				<xsd:enumeration value="nofollowAnchors"/>
+				<xsd:enumeration value="validateParamAsEmbed"/>
+				<xsd:enumeration value="preserveComments"/>
+				<xsd:enumeration value="preserveSpace"/>
+				<xsd:enumeration value="onUnknownTag"/>
+				<xsd:enumeration value="formatOutput"/>
+			  </xsd:restriction>
+			</xsd:simpleType>
+				</xsd:attribute>
+				<xsd:attribute name="value" use="required"/>
+			</xsd:complexType>
+			<xsd:complexType name="CommonRegexps">
+				<xsd:sequence maxOccurs="unbounded">
+					<xsd:element name="regexp" type="RegExp" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="AttributeList">
+				<xsd:sequence maxOccurs="unbounded">
+					<xsd:element name="attribute" type="Attribute" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="TagsToEncodeList">
+				<xsd:sequence maxOccurs="unbounded">
+					<xsd:element name="tag" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="TagRules">
+				<xsd:sequence maxOccurs="unbounded">
+					<xsd:element name="tag" type="Tag" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="Tag">
+				<xsd:sequence maxOccurs="unbounded">
+					<xsd:element name="attribute" type="Attribute" minOccurs="0" />
+				</xsd:sequence>
+				<xsd:attribute name="name" use="required"/>
+				<xsd:attribute name="action" use="required">
+				  <xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:enumeration value="validate"/>
+						<xsd:enumeration value="truncate"/>
+						<xsd:enumeration value="remove"/>
+						<xsd:enumeration value="filter"/>
+						<xsd:enumeration value="encode"/>
+					</xsd:restriction>
+				  </xsd:simpleType>
+				</xsd:attribute>
+			</xsd:complexType>
+			<xsd:complexType name="Attribute">
+				<xsd:sequence>
+					<xsd:element name="regexp-list" type="RegexpList" minOccurs="0"/>
+					<xsd:element name="literal-list" type="LiteralList" minOccurs="0"/>
+				</xsd:sequence>
+				<xsd:attribute name="name" use="required"/>
+				<xsd:attribute name="description"/>
+				<xsd:attribute name="onInvalid">
+				  <xsd:simpleType>
+				<xsd:restriction base="xsd:string">
+				  <xsd:enumeration value="removeTag"/>
+				  <xsd:enumeration value="filterTag"/>
+				  <xsd:enumeration value="encodeTag"/>
+				  <xsd:enumeration value="removeAttribute"/>
+				</xsd:restriction>
+			  </xsd:simpleType>
+				</xsd:attribute>
+			</xsd:complexType>
+			<xsd:complexType name="RegexpList">
+				<xsd:sequence maxOccurs="unbounded">
+					<xsd:element name="regexp" type="RegExp" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="RegExp">
+				<xsd:attribute name="name" type="xsd:string"/>
+				<xsd:attribute name="value" type="xsd:string"/>
+			</xsd:complexType>
+			<xsd:complexType name="LiteralList">
+				<xsd:sequence maxOccurs="unbounded">
+					<xsd:element name="literal" type="Literal" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="Literal">
+				<xsd:attribute name="value" type="xsd:string"/>
+			</xsd:complexType>
+			<xsd:complexType name="CSSRules">
+				<xsd:sequence maxOccurs="unbounded">
+					<xsd:element name="property" type="Property" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="Property">
+				<xsd:sequence>
+					<xsd:element name="category-list" type="CategoryList" minOccurs="0"/>
+					<xsd:element name="literal-list" type="LiteralList" minOccurs="0"/>
+					<xsd:element name="regexp-list" type="RegexpList" minOccurs="0"/>
+					<xsd:element name="shorthand-list" type="ShorthandList" minOccurs="0"/>
+				</xsd:sequence>
+				<xsd:attribute name="name" type="xsd:string" use="required"/>
+				<xsd:attribute name="default" type="xsd:string"/>
+				<xsd:attribute name="description" type="xsd:string"/>
+			</xsd:complexType>
+			<xsd:complexType name="ShorthandList">
+				<xsd:sequence maxOccurs="unbounded">
+					<xsd:element name="shorthand" type="Shorthand" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="Shorthand">
+				<xsd:attribute name="name" type="xsd:string" use="required"/>
+			</xsd:complexType>
+			<xsd:complexType name="CategoryList">
+				<xsd:sequence maxOccurs="unbounded">
+					<xsd:element name="category" type="Category" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="Category">
+				<xsd:attribute name="value" type="xsd:string" use="required"/>
+			</xsd:complexType>
+			<xsd:complexType name="Entity">
+				<xsd:attribute name="name" type="xsd:string" use="required"/>
+				<xsd:attribute name="cdata" type="xsd:string" use="required"/>
+			</xsd:complexType>
+			<xsd:complexType name="AllowedEmptyTags">
+				<xsd:sequence>
+					<xsd:element name="literal-list" type="LiteralList" minOccurs="1"/>
+				</xsd:sequence>
+			</xsd:complexType>
+
+		</xsd:schema>
+	SHEET
+ end
 end
-
-
-__END__
-<?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema
-  xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-	<xsd:element name="anti-samy-rules">
-		<xsd:complexType>
-		<xsd:sequence>
-			<xsd:element name="directives" type="Directives" maxOccurs="1" minOccurs="1"/>
-			<xsd:element name="common-regexps" type="CommonRegexps" maxOccurs="1" minOccurs="1"/>
-			<xsd:element name="common-attributes" type="AttributeList" maxOccurs="1" minOccurs="1"/>
-			<xsd:element name="global-tag-attributes" type="AttributeList" maxOccurs="1" minOccurs="1"/>
-			<xsd:element name="tags-to-encode" type="TagsToEncodeList" minOccurs="0" maxOccurs="1"/>
-			<xsd:element name="tag-rules" type="TagRules" minOccurs="1" maxOccurs="1"/>
-			<xsd:element name="css-rules" type="CSSRules" minOccurs="1" maxOccurs="1"/>
-			<xsd:element name="allowed-empty-tags" type="AllowedEmptyTags" minOccurs="0" maxOccurs="1"/>
-		</xsd:sequence>
-		</xsd:complexType>
-	</xsd:element>
-	<xsd:complexType name="Directives">
-		<xsd:sequence maxOccurs="unbounded">
-			<xsd:element name="directive" type="Directive" minOccurs="0"/>
-		</xsd:sequence>
-	</xsd:complexType>
-	<xsd:complexType name="Directive">
-		<xsd:attribute name="name" use="required">
-		<xsd:simpleType>
-      <xsd:restriction base="xsd:string">
-        <xsd:enumeration value="omitXmlDeclaration"/>
-        <xsd:enumeration value="omitDoctypeDeclaration"/>
-        <xsd:enumeration value="maxInputSize"/>
-        <xsd:enumeration value="useXHTML"/>
-        <xsd:enumeration value="embedStyleSheets"/>
-        <xsd:enumeration value="maxStyleSheetImports"/>
-        <xsd:enumeration value="connectionTimeout"/>
-        <xsd:enumeration value="nofollowAnchors"/>
-        <xsd:enumeration value="validateParamAsEmbed"/>
-        <xsd:enumeration value="preserveComments"/>
-        <xsd:enumeration value="preserveSpace"/>
-        <xsd:enumeration value="onUnknownTag"/>
-        <xsd:enumeration value="formatOutput"/>
-      </xsd:restriction>
-    </xsd:simpleType>
-		</xsd:attribute>
-		<xsd:attribute name="value" use="required"/>
-	</xsd:complexType>
-	<xsd:complexType name="CommonRegexps">
-		<xsd:sequence maxOccurs="unbounded">
-			<xsd:element name="regexp" type="RegExp" minOccurs="0"/>
-		</xsd:sequence>
-	</xsd:complexType>
-	<xsd:complexType name="AttributeList">
-		<xsd:sequence maxOccurs="unbounded">
-			<xsd:element name="attribute" type="Attribute" minOccurs="0"/>
-		</xsd:sequence>
-	</xsd:complexType>
-	<xsd:complexType name="TagsToEncodeList">
-		<xsd:sequence maxOccurs="unbounded">
-			<xsd:element name="tag" minOccurs="0"/>
-		</xsd:sequence>
-	</xsd:complexType>
-	<xsd:complexType name="TagRules">
-		<xsd:sequence maxOccurs="unbounded">
-			<xsd:element name="tag" type="Tag" minOccurs="0"/>
-		</xsd:sequence>
-	</xsd:complexType>
-	<xsd:complexType name="Tag">
-		<xsd:sequence maxOccurs="unbounded">
-			<xsd:element name="attribute" type="Attribute" minOccurs="0" />
-		</xsd:sequence>
-		<xsd:attribute name="name" use="required"/>
-		<xsd:attribute name="action" use="required">
-		  <xsd:simpleType>
-			<xsd:restriction base="xsd:string">
-				<xsd:enumeration value="validate"/>
-				<xsd:enumeration value="truncate"/>
-				<xsd:enumeration value="remove"/>
-				<xsd:enumeration value="filter"/>
-				<xsd:enumeration value="encode"/>
-			</xsd:restriction>
-		  </xsd:simpleType>
-		</xsd:attribute>
-	</xsd:complexType>
-	<xsd:complexType name="Attribute">
-		<xsd:sequence>
-			<xsd:element name="regexp-list" type="RegexpList" minOccurs="0"/>
-			<xsd:element name="literal-list" type="LiteralList" minOccurs="0"/>
-		</xsd:sequence>
-		<xsd:attribute name="name" use="required"/>
-		<xsd:attribute name="description"/>
-		<xsd:attribute name="onInvalid">
-		  <xsd:simpleType>
-        <xsd:restriction base="xsd:string">
-          <xsd:enumeration value="removeTag"/>
-          <xsd:enumeration value="filterTag"/>
-          <xsd:enumeration value="encodeTag"/>
-          <xsd:enumeration value="removeAttribute"/>
-        </xsd:restriction>
-      </xsd:simpleType>
-		</xsd:attribute>
-	</xsd:complexType>
-	<xsd:complexType name="RegexpList">
-		<xsd:sequence maxOccurs="unbounded">
-			<xsd:element name="regexp" type="RegExp" minOccurs="0"/>
-		</xsd:sequence>
-	</xsd:complexType>
-	<xsd:complexType name="RegExp">
-		<xsd:attribute name="name" type="xsd:string"/>
-		<xsd:attribute name="value" type="xsd:string"/>
-	</xsd:complexType>
-	<xsd:complexType name="LiteralList">
-		<xsd:sequence maxOccurs="unbounded">
-			<xsd:element name="literal" type="Literal" minOccurs="0"/>
-		</xsd:sequence>
-	</xsd:complexType>
-	<xsd:complexType name="Literal">
-		<xsd:attribute name="value" type="xsd:string"/>
-	</xsd:complexType>
-	<xsd:complexType name="CSSRules">
-		<xsd:sequence maxOccurs="unbounded">
-			<xsd:element name="property" type="Property" minOccurs="0"/>
-		</xsd:sequence>
-	</xsd:complexType>
-	<xsd:complexType name="Property">
-		<xsd:sequence>
-			<xsd:element name="category-list" type="CategoryList" minOccurs="0"/>
-			<xsd:element name="literal-list" type="LiteralList" minOccurs="0"/>
-			<xsd:element name="regexp-list" type="RegexpList" minOccurs="0"/>
-			<xsd:element name="shorthand-list" type="ShorthandList" minOccurs="0"/>
-		</xsd:sequence>
-		<xsd:attribute name="name" type="xsd:string" use="required"/>
-		<xsd:attribute name="default" type="xsd:string"/>
-		<xsd:attribute name="description" type="xsd:string"/>
-	</xsd:complexType>
-	<xsd:complexType name="ShorthandList">
-		<xsd:sequence maxOccurs="unbounded">
-			<xsd:element name="shorthand" type="Shorthand" minOccurs="0"/>
-		</xsd:sequence>
-	</xsd:complexType>
-	<xsd:complexType name="Shorthand">
-		<xsd:attribute name="name" type="xsd:string" use="required"/>
-	</xsd:complexType>
-	<xsd:complexType name="CategoryList">
-		<xsd:sequence maxOccurs="unbounded">
-			<xsd:element name="category" type="Category" minOccurs="0"/>
-		</xsd:sequence>
-	</xsd:complexType>
-	<xsd:complexType name="Category">
-		<xsd:attribute name="value" type="xsd:string" use="required"/>
-	</xsd:complexType>
-	<xsd:complexType name="Entity">
-		<xsd:attribute name="name" type="xsd:string" use="required"/>
-		<xsd:attribute name="cdata" type="xsd:string" use="required"/>
-	</xsd:complexType>
-	<xsd:complexType name="AllowedEmptyTags">
-        <xsd:sequence>
-            <xsd:element name="literal-list" type="LiteralList" minOccurs="1"/>
-        </xsd:sequence>
-    </xsd:complexType>
-
-</xsd:schema>
