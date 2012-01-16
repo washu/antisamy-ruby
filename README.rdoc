@@ -1,4 +1,4 @@
-= Antisamy
+= Antisamy {<img src="https://secure.travis-ci.org/washu/antisamy-ruby.png" />}[http://travis-ci.org/washu/antisamy-ruby]
 
 This project is a port of the java AntiSamy project to the ruby runtime. Its intended to provide a library for developers to add protection to their web applications from malicious
 user-supplier HTML and CSS. Please check out the AntiSamy project over at OWASP[http://www.owasp.org/index.php/Category:OWASP_AntiSamy_Project].
